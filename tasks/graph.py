@@ -1,5 +1,7 @@
 from typing import Any
 
+from collections import deque
+
 __all__ = (
     'Node',
     'Graph'
@@ -12,6 +14,8 @@ class Node:
 
         self.outbound = []
         self.inbound = []
+
+        self.visited = False
 
     def point_to(self, other: 'Node'):
         self.outbound.append(other)
@@ -27,8 +31,41 @@ class Graph:
     def __init__(self, root: Node):
         self._root = root
 
+    def __clear_visited(self):
+        queue = deque()
+        queue.append(self._root)
+        while queue:
+            node = queue.popleft()
+            node.visited = False
+            for out in node.outbound:
+                if out.visited:
+                    queue.append(out)
+
     def dfs(self) -> list[Node]:
-        raise NotImplementedError
+        result = []
+        stack = deque()
+        stack.append(self._root)
+        while stack:
+            node = stack.pop()
+            if not node.visited:
+                node.visited = True
+                result.append(node)
+                for out in node.outbound[-1::-1]:
+                    stack.append(out)
+        self.__clear_visited()
+        return result
 
     def bfs(self) -> list[Node]:
-        raise NotImplementedError
+        result = []
+        queue = deque()
+        queue.append(self._root)
+        while queue:
+            node = queue.popleft()
+            if not node.visited:
+                result.append(node)
+            node.visited = True
+            for out in node.outbound:
+                if not out.visited and out not in queue:
+                    queue.append(out)
+        self.__clear_visited()
+        return result
