@@ -15,7 +15,4 @@ def even_odd(arr: list[int]) -> float:
             sum_even += number
         else:
             sum_odd += number
-    if sum_odd:
-        return sum_even / sum_odd
-    else:
-        return 0
+    return sum_even / sum_odd if sum_odd else 0
